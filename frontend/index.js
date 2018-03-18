@@ -67,6 +67,7 @@ Codecast.start = function (options) {
 
   const qs = queryString.parse(window.location.search);
 
+
   const stepperOptions = {
     showStepper: true,
     showStack: true,
@@ -97,6 +98,11 @@ Codecast.start = function (options) {
     stepperOptions.showIO = false;
   }
   store.dispatch({type: scope.stepperConfigure, options: stepperOptions});
+
+  if ('editorLanguage' in qs)
+  {
+    store.dispatch({type: scope.bufferLanguageConfigure, options: qs.editorLanguage||''});
+  }
 
   /* Source code from options or URL */
   if ('source' in options) {

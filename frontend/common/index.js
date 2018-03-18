@@ -10,6 +10,7 @@ import buffers from '../buffers/index';
 import errors from './errors';
 import resize from './resize';
 import MenuBundle from './menu';
+import aceMode from "./aceMode";
 import examples from './examples';
 import ArduinoBundle from '../arduino/index';
 import ReplayBundle from '../player/replay';
@@ -36,6 +37,7 @@ export default function (bundle) {
   bundle.include(resize);
   bundle.include(MenuBundle);
   bundle.include(examples);
+  bundle.include(aceMode);
   bundle.include(ArduinoBundle);
   bundle.include(require('./login'));
   bundle.include(require('./client_api'));

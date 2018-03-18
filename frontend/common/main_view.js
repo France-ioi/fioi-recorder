@@ -2,6 +2,7 @@
 import React from 'react';
 import {Button, Panel} from 'react-bootstrap';
 import classnames from 'classnames';
+import {modes} from "./aceMode.js"
 
 class MainView extends React.PureComponent {
   render () {
@@ -97,10 +98,11 @@ export default function (bundle, deps) {
     'getTranslateDiagnostics', 'getStepperDisplay', 'getStepperOptions',
     'translateClearDiagnostics', 'stepperExit',
     'BufferEditor', 'StackView', 'DirectivesPane', 'IOPane',
-    'ArduinoConfigPanel', 'ArduinoPanel'
+    'ArduinoConfigPanel', 'ArduinoPanel', "getAuthorisedAceModesList"
   );
 
   function MainViewSelector (state, props) {
+    //console.log(modes);
     const getMessage = state.get('getMessage');
     const geometry = state.get('mainViewGeometry');
     const panes = state.get('panes');
@@ -112,8 +114,12 @@ export default function (bundle, deps) {
     const options = deps.getStepperOptions(state);
     const {translateClearDiagnostics, stepperExit} = deps;
     const arduinoEnabled = options.get('arduino');
+    const authorisedLang = deps.getAuthorisedAceModesList(state);
+    const setLang = state.get('bufferLanguage.options');
+
+    const lang = (setLang in authorisedLang) ? setLang  : "c_cpp";
     const sourceRowHeight = '300px';
-    const sourceMode = arduinoEnabled ? 'arduino' : 'c_cpp';
+    const sourceMode = arduinoEnabled ? 'arduino' : lang;
     return {
       diagnostics, haveStepper, readOnly, error, options, getMessage, geometry, panes,
       translateClearDiagnostics, stepperExit,
