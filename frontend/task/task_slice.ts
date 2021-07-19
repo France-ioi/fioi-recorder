@@ -1,6 +1,9 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
+export const taskLevels = ['basic', 'easy', 'medium', 'hard'];
+
 export interface TaskState {
+    currentLevel?: number,
     recordingEnabled?: boolean,
     state?: any,
     success?: boolean,
@@ -10,6 +13,7 @@ export interface TaskState {
 }
 
 export const taskInitialState = {
+    currentLevel: null,
     recordingEnabled: false,
     success: false,
     successMessage: null,
@@ -21,6 +25,9 @@ export const taskSlice = createSlice({
     name: 'task',
     initialState: taskInitialState,
     reducers: {
+        currentLevelChange(state, action: PayloadAction<number>) {
+            state.currentLevel = action.payload;
+        },
         recordingEnabledChange(state, action: PayloadAction<boolean>) {
             state.recordingEnabled = action.payload;
         },
@@ -49,6 +56,7 @@ export const taskSlice = createSlice({
 });
 
 export const {
+    currentLevelChange,
     recordingEnabledChange,
     taskSuccess,
     taskSuccessClear,

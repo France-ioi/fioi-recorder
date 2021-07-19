@@ -353,7 +353,6 @@ function* replaySaga(app: App, {type, payload}) {
         }
 
         audio.currentTime = audioTime / 1000;
-        console.log(`SEEK execution time: ${window.performance.now() - start} ms`);
         if (!isPlaying) {
             return;
         }

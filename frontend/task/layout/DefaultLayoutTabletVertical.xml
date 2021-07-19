@@ -9,9 +9,10 @@
         </ZoneLayout>
     </HorizontalLayout>
     <ZoneLayout name="center">
-        <Editor/>
+        <Documentation/>
+        <Editor closedOnDocumentationOpen="true"/>
     </ZoneLayout>
-    <ZoneLayout name="bottom-left,bottom-right"/>
+    <ZoneLayout name="bottom-left,bottom-right" closedOnDocumentationOpen="true"/>
     <ZoneLayout desiredSize="60px" overflow="false">
         <ControlsAndErrors/>
     </ZoneLayout>

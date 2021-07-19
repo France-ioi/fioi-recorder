@@ -13,13 +13,14 @@
         </ZoneLayout>
     </VerticalLayout>
     <VerticalLayout desiredSize="60%">
-        <ZoneLayout name="center-top"/>
+        <ZoneLayout name="center-top" closedOnDocumentationOpen="true"/>
         <ZoneLayout name="center">
-            <Editor/>
+            <Documentation/>
+            <Editor closedOnDocumentationOpen="true"/>
         </ZoneLayout>
-        <ZoneLayout name="center-bottom" default="true"/>
+        <ZoneLayout name="center-bottom" default="true" closedOnDocumentationOpen="true"/>
     </VerticalLayout>
-    <VerticalLayout desiredSize="40%">
+    <VerticalLayout desiredSize="40%" closedOnDocumentationOpen="true">
         <ZoneLayout name="top-right"/>
         <ZoneLayout name="center-right"/>
         <ZoneLayout name="bottom-right"/>

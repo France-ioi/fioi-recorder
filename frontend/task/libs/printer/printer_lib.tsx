@@ -6,7 +6,7 @@ import {AppStore} from "../../../store";
 import {channel} from "redux-saga";
 import {ActionTypes} from "../../../buffers/actionTypes";
 import {ActionTypes as StepperActionTypes} from "../../../stepper/actionTypes";
-import {ActionTypes as TaskActionTypes, taskInputEntered, taskReset, TaskResetAction} from "../../index";
+import {TaskActionTypes as TaskActionTypes, taskInputEntered, taskReset, TaskResetAction} from "../../index";
 import {documentModelFromString} from "../../../buffers";
 import taskSlice, {taskInputNeeded, taskSuccess, taskSuccessClear, updateCurrentTest} from "../../task_slice";
 import printerTerminalSlice, {
@@ -186,7 +186,7 @@ export class PrinterLib extends QuickAlgoLibrary {
         this.setLocalLanguageStrings(localLanguageStrings);
 
         const conceptBaseUrl = (window.location.protocol == 'https:' ? 'https:' : 'http:') + '//'
-            + 'static4.castor-informatique.fr/help/printer.html';
+            + 'static4.castor-informatique.fr/help/printer_codecast.html';
 
         this.conceptList = [
             {
@@ -198,7 +198,6 @@ export class PrinterLib extends QuickAlgoLibrary {
             {id: 'printer_print', name: 'Afficher une ligne', url: conceptBaseUrl + '#printer_print', isBase: true},
             {id: 'printer_read', name: 'Lire une ligne', url: conceptBaseUrl + '#printer_read', isBase: true}
         ];
-
 
         this.cells = [];
         this.texts = [];

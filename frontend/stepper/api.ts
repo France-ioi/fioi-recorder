@@ -13,7 +13,7 @@ import {clearLoadedReferences} from "./python/analysis/analysis";
 import {AppStore, AppStoreReplay} from "../store";
 import {initialStepperStateControls, Stepper, StepperState} from "./index";
 import {Bundle} from "../linker";
-import {ActionTypes as TaskActionTypes} from "../task";
+import {TaskActionTypes as TaskActionTypes} from "../task";
 
 export interface StepperContext {
     state: StepperState,

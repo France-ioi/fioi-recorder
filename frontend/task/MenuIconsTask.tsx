@@ -3,9 +3,12 @@ import {Button} from '@blueprintjs/core';
 import {FullscreenButton} from "../common/FullscreenButton";
 import {SubtitlesPopup} from "../subtitles/SubtitlesPopup";
 import {useAppSelector} from "../hooks";
+import {faQuestion} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 interface MenuIconsTaskProps {
     toggleMenu: () => void,
+    toggleDocumentation: () => void,
 }
 
 export function MenuIconsTask(props: MenuIconsTaskProps) {
@@ -32,6 +35,9 @@ export function MenuIconsTask(props: MenuIconsTaskProps) {
                       <SubtitlesPopup open={subtitlesOpen} onClose={() => setSubtitlesOpen(false)}/>
                     </div>
                 }
+                <div className="menu-task-element is-blue">
+                    <Button onClick={props.toggleDocumentation} icon='help'/>
+                </div>
                 <div className="menu-task-element">
                     <Button onClick={props.toggleMenu} icon='menu'/>
                 </div>

@@ -22,6 +22,7 @@ import {initialStateTerminal} from "./stepper/io/terminal";
 import {TaskState} from "./task/task_slice";
 import {LayoutState} from "./task/layout/layout";
 import {PrinterTerminalState} from "./task/libs/printer/printer_terminal_slice";
+import {DocumentationState} from "./task/documentation_slice";
 
 export type CodecastPlatform = 'python' | 'unix' | 'arduino';
 
@@ -113,6 +114,7 @@ export interface AppStore extends Store, AppStoreReplay {
     viewportTooSmall: boolean,
 
     printerTerminal: PrinterTerminalState,
+    documentation: DocumentationState,
 
     // TODO: Function should not be inside the store.
     getMessage: Function,

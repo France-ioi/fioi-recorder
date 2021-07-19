@@ -6,6 +6,7 @@ import {StepperStatus} from "../../stepper";
 import {ActionTypes} from "./actionTypes";
 import {withResizeDetector} from 'react-resize-detector/build/withPolyfill';
 import {Directive} from "../../stepper/python/directives";
+import {Screen} from "../../common/screens";
 
 interface LayoutLoaderStateToProps {
     advisedVisualization: string,
@@ -15,6 +16,7 @@ interface LayoutLoaderStateToProps {
     preferredVisualizations: string[],
     layoutType: LayoutType,
     layoutMobileMode: LayoutMobileMode,
+    screen: Screen,
 }
 
 function mapStateToProps(state: AppStore): LayoutLoaderStateToProps {
@@ -26,9 +28,10 @@ function mapStateToProps(state: AppStore): LayoutLoaderStateToProps {
     const preferredVisualizations = state.layout.preferredVisualizations;
     const layoutType = state.layout.type;
     const layoutMobileMode = state.layout.mobileMode;
+    const screen = state.screen;
 
     return {
-        getMessage, orderedDirectives, fullScreenActive, advisedVisualization, preferredVisualizations, layoutType, layoutMobileMode,
+        getMessage, orderedDirectives, fullScreenActive, advisedVisualization, preferredVisualizations, layoutType, layoutMobileMode, screen,
     };
 }
 

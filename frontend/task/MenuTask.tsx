@@ -90,11 +90,12 @@ class _MenuTask extends React.PureComponent<MenuTaskProps, MenuTaskState> {
 
         return (
             <div ref={this.wrapperRef} className={`menu-container ${this.state.menuOpen ? 'is-open' : ''}`}>
-                <div className="menu-icons">
+                {screen !== Screen.DocumentationSmall && screen !== Screen.DocumentationBig && <div className="menu-icons">
                     <MenuIconsTask
                         toggleMenu={this.toggleMenu}
+                        toggleDocumentation={this.toggleDocumentation}
                     />
-                </div>
+                </div>}
                 <div className={`task-menu`}>
                     <div className="menu-item" onClick={this.toggleSettings}>
                         <Icon icon="cog"/>
@@ -146,6 +147,11 @@ class _MenuTask extends React.PureComponent<MenuTaskProps, MenuTaskState> {
         this.setState(prevState => ({
             menuOpen: !prevState.menuOpen,
         }));
+    };
+
+    toggleDocumentation = () => {
+        const newScreen = Screen.DocumentationSmall === this.props.screen || Screen.DocumentationBig === this.props.screen ? null : Screen.DocumentationSmall;
+        this.props.dispatch({type: CommonActionTypes.AppSwitchToScreen, payload: {screen: newScreen}});
     };
 
     toggleRecording = () => {

@@ -1,13 +1,26 @@
 $primary: #4a90e2;
 
-@import "./layout/layout.scss";
-@import "./controls.scss";
-
 @mixin mobile {
   @media screen and (max-width: 767px) {
     @content
   }
 }
+
+@include mobile {
+  .hidden-mobile {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .visible-mobile {
+    display: none;
+  }
+}
+
+@import "./layout/layout.scss";
+@import "./controls.scss";
+@import "./documentation.scss";
 
 html {
   margin: 0 !important;

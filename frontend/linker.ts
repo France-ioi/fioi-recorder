@@ -5,6 +5,7 @@ import {App} from "./index";
 import {AppStore} from "./store";
 import {configureStore} from "@reduxjs/toolkit";
 import taskSlice from "./task/task_slice";
+import documentationSlice from "./task/documentation_slice";
 import printerTerminalSlice from "./task/libs/printer/printer_terminal_slice";
 import log from "loglevel";
 
@@ -151,21 +152,22 @@ export function link(rootBuilder): Linker {
     const immerRootReducer = produce(rootReducer);
 
     const rootReducerWithSlices = (state, action) => {
-        log.debug('Root reducer', action);
+        log.getLogger('performance').debug('Root reducer', action);
         let start = window.performance.now();
         let newState = immerRootReducer(state, action);
         let end = window.performance.now();
-        console.log(`Execution time: ${end - start} ms`);
+        log.getLogger('performance').debug(`Execution time: ${end - start} ms`);
 
         let start2 = window.performance.now();
 
         const newNewState = customCombineReducers({
             [taskSlice.name]: taskSlice.reducer,
+            [documentationSlice.name]: documentationSlice.reducer,
             [printerTerminalSlice.name]: printerTerminalSlice.reducer,
         })(newState, action);
 
         let end2 = window.performance.now();
-        console.log(`Execution time2: ${end2 - start2} ms`);
+        log.getLogger('performance').debug(`Execution time2: ${end2 - start2} ms`);
 
         return newNewState;
     };

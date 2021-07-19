@@ -2,56 +2,58 @@ import {extractLevelSpecific} from "./utils";
 import StringRotation from './fixtures/14_strings_05_rotation';
 import {Bundle} from "../linker";
 import {ActionTypes as RecorderActionTypes} from "../recorder/actionTypes";
-import {ActionTypes as StepperActionTypes} from "../stepper/actionTypes";
 import {call, put, select, takeEvery, all, fork} from "redux-saga/effects";
 import {getRecorderState} from "../recorder/selectors";
 import {App} from "../index";
-import {PlayerInstant} from "../player";
 import {PrinterLib} from "./libs/printer/printer_lib";
-import {AppAction, AppStore} from "../store";
+import {AppAction} from "../store";
 import {quickAlgoLibraries, QuickAlgoLibraries, QuickAlgoLibrary} from "./libs/quickalgo_librairies";
 import taskSlice, {
-    recordingEnabledChange, taskInitialState, taskRecordableActions,
+    currentLevelChange,
+    recordingEnabledChange, taskLevels, taskRecordableActions,
     TaskState,
-    taskSuccess,
-    taskSuccessClear,
     updateCurrentTest
 } from "./task_slice";
 import {addAutoRecordingBehaviour} from "../recorder/record";
 import {ReplayContext} from "../player/sagas";
-import {DocumentModel, initialStateBuffers} from "../buffers";
+import DocumentationBundle from "./documentation";
 
-export enum ActionTypes {
+export enum TaskActionTypes {
     TaskLoad = 'task/load',
+    TaskLoaded = 'task/loaded',
     TaskReset = 'task/reset',
     TaskInputEntered = 'task/inputEntered',
 }
 
 export interface TaskResetAction extends AppAction {
-    type: ActionTypes.TaskReset;
+    type: TaskActionTypes.TaskReset;
     payload: TaskState;
 }
 
 export interface TaskInputEnteredAction extends AppAction {
-    type: ActionTypes.TaskInputEntered;
+    type: TaskActionTypes.TaskInputEntered;
     payload: string;
 }
 
 export const taskLoad = () => ({
-    type: ActionTypes.TaskLoad,
+    type: TaskActionTypes.TaskLoad,
+});
+
+export const taskLoaded = () => ({
+    type: TaskActionTypes.TaskLoaded,
 });
 
 export const taskReset = (
     taskData: TaskState,
 ): TaskResetAction => ({
-    type: ActionTypes.TaskReset,
+    type: TaskActionTypes.TaskReset,
     payload: taskData,
 });
 
 export const taskInputEntered = (
     input: string
 ): TaskInputEnteredAction => ({
-    type: ActionTypes.TaskInputEntered,
+    type: TaskActionTypes.TaskInputEntered,
     payload: input,
 });
 
@@ -76,10 +78,11 @@ if (!String.prototype.format) {
 }
 
 const subTask = StringRotation;
-const curLevel = 'easy';
+const currentLevel = 1;
 
 function* createContext (quickAlgoLibraries: QuickAlgoLibraries) {
-    const levelGridInfos = extractLevelSpecific(subTask.gridInfos, curLevel);
+    const currentLevel = yield select(state => state.task.currentLevel);
+    const levelGridInfos = extractLevelSpecific(subTask.gridInfos, taskLevels[currentLevel]);
     const display = true;
 
     try {
@@ -90,19 +93,18 @@ function* createContext (quickAlgoLibraries: QuickAlgoLibraries) {
         quickAlgoLibraries.addLibrary(defaultLib, 'default');
     }
 
-    const testData = getTaskTest();
+    const testData = getTaskTest(currentLevel);
     console.log('create context', testData);
     yield put(updateCurrentTest(testData));
     quickAlgoLibraries.reset(testData);
 }
 
-function getTaskTest() {
-    return subTask.data[curLevel][0];
+function getTaskTest(currentLevel: number) {
+    return subTask.data[taskLevels[currentLevel]][0];
 }
 
 export function getAutocompletionParameters (context) {
-    const curLevel = 'easy';
-    const curIncludeBlocks = extractLevelSpecific(context.infos.includeBlocks, curLevel);
+    const curIncludeBlocks = extractLevelSpecific(context.infos.includeBlocks, taskLevels[currentLevel]);
 
     return {
         includeBlocks: curIncludeBlocks,
@@ -112,9 +114,13 @@ export function getAutocompletionParameters (context) {
 }
 
 export default function (bundle: Bundle) {
+    bundle.include(DocumentationBundle);
+
     bundle.addSaga(function* (app: App) {
-        yield takeEvery(ActionTypes.TaskLoad, function* () {
+        yield takeEvery(TaskActionTypes.TaskLoad, function* () {
+            yield put(currentLevelChange(1));
             yield call(createContext, quickAlgoLibraries);
+            yield put(taskLoaded());
             const sagas = quickAlgoLibraries.getSagas(app);
             yield fork(function* () {
                 yield all(sagas);
@@ -147,7 +153,8 @@ export default function (bundle: Bundle) {
 
         app.replayApi.on('start', function(replayContext: ReplayContext) {
             replayContext.state.task = {
-                currentTest: getTaskTest(),
+                currentLevel,
+                currentTest: getTaskTest(currentLevel),
                 state: context && context.getCurrentState ? {...context.getCurrentState()} : {},
             };
         });

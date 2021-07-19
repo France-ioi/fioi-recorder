@@ -16,6 +16,8 @@ import {LayoutStackView} from "./LayoutStackView";
 import {LayoutEditor} from "./LayoutEditor";
 import {LayoutDirective} from "./LayoutDirective";
 import {QuickAlgoLibraries, quickAlgoLibraries} from "../libs/quickalgo_librairies";
+import {Screen} from "../../common/screens";
+import {Documentation} from "../Documentation";
 
 interface Dimensions {
     width: number,
@@ -47,6 +49,7 @@ interface BuildZoneLayoutData {
     height: number,
     preferredVisualizations: string[],
     quickAlgoLibraries: QuickAlgoLibraries,
+    documentationOpen: boolean,
 }
 
 export interface LayoutProps {
@@ -58,6 +61,7 @@ export interface LayoutProps {
     preferredVisualizations: string[],
     layoutType: LayoutType,
     layoutMobileMode: LayoutMobileMode,
+    screen: Screen,
 }
 
 export interface LayoutElementMetadata {
@@ -223,6 +227,9 @@ function createVisualizationGroupsForZone(node: XmlParserNode, data: BuildZoneLa
     const visualizationGroups: LayoutVisualizationGroup[] = [];
 
     for (let child of node.elements) {
+        if ((child.type === Documentation && !data.documentationOpen) || (data.documentationOpen && child.props.metadata['closedOnDocumentationOpen'])) {
+            continue;
+        }
         visualizationGroups.push({
             elements: [child],
         });
@@ -455,18 +462,24 @@ function applyOnLayoutZones(node: XmlParserNode, callback: (XmlParserNode) => vo
         callback(node);
     }
 
-    node.elements.forEach(node => applyOnLayoutZones(node, callback));
+    if (node.elements && node.elements.length) {
+        node.elements.forEach(node => applyOnLayoutZones(node, callback));
+    }
 }
 
-function recursivelyPruneReactTree(node: XmlParserNode): XmlParserNode {
+function recursivelyPruneReactTree(node: XmlParserNode, documentationOpen: Boolean): XmlParserNode {
     node.elements = node.elements
-        .map(element => recursivelyPruneReactTree(element))
+        .map(element => recursivelyPruneReactTree(element, documentationOpen))
         .filter(child => null !== child);
 
     if (
         node.type && (node.type === RelativeLayout || node.type === ZoneLayout)
         && !node.elements.length && !(node.visualizationGroups && node.visualizationGroups.length)
     ) {
+        return null;
+    }
+
+    if ((node.type === Documentation && !documentationOpen) || (documentationOpen && node.props.metadata['closedOnDocumentationOpen'])) {
         return null;
     }
 
@@ -533,7 +546,7 @@ function buildZonesLayout(node: XmlParserNode, data: BuildZoneLayoutData): React
         node.visualizationGroups = createVisualizationGroupsForZone(node, data);
     });
 
-    recursivelyPruneReactTree(node);
+    recursivelyPruneReactTree(node, data.documentationOpen);
 
     if (data.width && data.height) {
         recursivelyAllocateSpace(node, data, {width: data.width, height: data.height});
@@ -630,6 +643,15 @@ export function createLayout(layoutProps: LayoutProps): ReactElement {
                 ...attrs,
             },
         }),
+        Documentation: (attrs) => ({
+            type: Documentation,
+            metadata: {
+                id: 'doc',
+                title: layoutProps.getMessage('TASK_DOCUMENTATION'),
+                icon: 'help',
+                ...attrs,
+            },
+        }),
     });
 
     const directivesByZone = {};
@@ -646,6 +668,11 @@ export function createLayout(layoutProps: LayoutProps): ReactElement {
 
     const layout = getAppropriateXmlLayout(layoutProps.layoutType, layoutProps.layoutMobileMode);
     let layoutXml = require('./' + layout).default;
+    const documentationOpen = Screen.DocumentationSmall === layoutProps.screen || Screen.DocumentationBig === layoutProps.screen;
+    if (documentationOpen && (layoutProps.layoutType === LayoutType.MobileHorizontal || layoutProps.layoutType === LayoutType.MobileVertical || Screen.DocumentationBig === layoutProps.screen)) {
+        layoutXml = '<Documentation/>';
+    }
+
     if (layoutProps.fullScreenActive) {
         layoutXml = '<Editor/>';
     }
@@ -658,6 +685,7 @@ export function createLayout(layoutProps: LayoutProps): ReactElement {
         height: layoutProps.height,
         getMessage: layoutProps.getMessage,
         preferredVisualizations: layoutProps.preferredVisualizations,
+        documentationOpen,
         quickAlgoLibraries,
     });
 }

@@ -155,6 +155,8 @@ module.exports = {
     TASK_DESCRIPTION: 'Énoncé',
     TASK_VARIABLES: 'Variables',
     TASK_EDITOR: 'Éditeur',
+    TASK_DOCUMENTATION: 'Informations',
+    TASK_DOCUMENTATION_INSTRUCTIONS: 'Détails de la mission',
     TASK_IO: 'Terminal',
     TASK_VISUALIZATION: "Visualisation {number}",
 };
